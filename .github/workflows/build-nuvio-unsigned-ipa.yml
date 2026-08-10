@@ -24,12 +24,18 @@ jobs:
     timeout-minutes: 90
 
     steps:
-      - name: Checkout Nuvio source (with submodules)
+      - name: Checkout Nuvio source
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.inputs.repository }}
           ref: ${{ github.event.inputs.ref }}
-          submodules: recursive
+          # NOTE: submodules are inited manually below. The repo has a
+          # `libass-android` gitlink with no matching .gitmodules entry,
+          # which breaks `submodules: recursive`. Only MPVKit is needed
+          # for the iOS build, so we init just that one.
+
+      - name: Init MPVKit submodule only
+        run: git submodule update --init MPVKit
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
